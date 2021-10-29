@@ -12,7 +12,7 @@
 &emsp;我呢，一看到这个题就感觉这玩意儿不就是找规律吗？然后我就开始画图......（~~就挺离谱的~~）然后就是痛苦的分析过程（~~在考场上真的是要把我烦死了~~）...
 
 &emsp; 首先，我们知道对于每个数 n 我们可以用一个简简单单的 dfs 来找出他所有的加法拆分。就比如5可以拆分为：1+1+1+1+1、1+1+1+2、1+2+2、1+1+3、1+4、2+3、5。用代码写出来就是这样：
-```
+```c++
 #include<bits/stdc++.h>
 using namespace std;
  
@@ -65,7 +65,7 @@ int main(){
 
 ​&emsp; ​
 即。由此我们可以得到总点数为：$\sum_{i=1}^{k}p_i = \sum_{i=1}^k sum_{i-1}\times a_i$ 。所以我们就得到了下面的代码：
-```
+```c++
 #include<bits/stdc++.h>
 using namespace std;
  
@@ -166,7 +166,7 @@ $$ g_i = \min_{j = 1}^N j + g_{i-\frac{j(j-1)}{2}} $$
 ​&emsp; ​
 这样的一个 DP 的时间复杂度很显然就是 $O(n^3)$ 的了。这样就能愉快的通过  100% 的数据了qwq。下面是 zengguisheng 教练给出的标准代码：
 
-​```
+```c++
 # include <bits/stdc++.h>
 using namespace std;
  
