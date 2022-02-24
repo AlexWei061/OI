@@ -82,7 +82,7 @@ $$
 \begin{aligned}
 & F(x) = a_0 + a_1 x + a_2 x^2 + a_3 x^3 + a_4 x^4 + \cdots\\
 & F_L(x) = a_0 + a_2 x + a_4 x^2 + a_6 x^3 + a_8 x^4 + \cdots\\
-& F_R(x) = a_1 + a_3 x + a_4 x^3 + a_7 x^3 + a_9 x^4 + \cdots
+& F_R(x) = a_1 + a_3 x + a_5 x^2 + a_7 x^3 + a_9 x^4 + \cdots
 \end{aligned}
 $$
 
@@ -169,6 +169,51 @@ nF[k] = & \sum_{i = 0}^{n - 1}\omega_n^{-ik}G[k]
 $$
 
 &emsp; 对于已经求出来的乘积的点值表达再来一遍 FFT，不过这次带入的是 $\omega_n^{0}, \omega_n^{-1}, \omega_n^{-1}, \cdots, \omega_n^{-n+1}$ 而已。
+
+## 代码
+
+&emsp; 原题传送门：[luogu:P3803 ](https://www.luogu.com.cn/problem/P3803)
+
+```cpp
+#include<bits/stdc++.h>
+using namespace std;
+#define MAXN 1 << 22
+#define eps 1e-6
+#define pi acos(-1.0)
+
+int n = 0; int m = 0;
+complex<double> a[MAXN], b[MAXN];
+
+void FFT(complex<double> *a, int n, int inv){
+	if(n == 1) return;
+	int mid = n / 2;
+	complex<double> Al[mid + 1], Ar[mid + 1];
+	for(int i = 0; i <= n; i += 2){
+		Al[i / 2] = a[i];
+		Ar[i / 2] = a[i + 1];
+	}
+	FFT(Al, mid, inv);
+	FFT(Ar, mid, inv);
+	complex<double> w0(1, 0), wn(cos(2 * pi / n), inv * sin(2 * pi / n));
+	for(int i = 0; i < mid; i++, w0 *= wn){
+		a[i] = Al[i] + w0 * Ar[i];
+		a[i + n / 2] = Al[i] - w0 * Ar[i];
+	}
+}
+
+int main(){
+	scanf("%d%d", &n, &m);
+	for (int i = 0; i <= n; ++i){ double x; scanf("%lf", &x); a[i].real(x); }
+    for (int i = 0; i <= m; ++i){ double x; scanf("%lf", &x); b[i].real(x); }
+    int len = 1 << max((int)ceil(log2(n + m)), 1);
+    FFT(a, len, 1);
+	FFT(b, len, 1);
+	for(int i = 0; i <= len; i++) a[i] *= b[i];
+	FFT(a, len, -1);
+	for (int i = 0; i <= n + m; ++i) printf("%.0f ", a[i].real() / len + eps);
+    return 0;
+}
+```
 
 ## 总结
 &emsp; 快速傅里叶变换求多项式乘法的步骤如下：
