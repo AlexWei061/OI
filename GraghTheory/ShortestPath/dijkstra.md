@@ -1,6 +1,6 @@
 # dijkstra + 堆优化
 &emsp; bfs（把bfs中用的队列改成优先队列） 然后对于每个"两边之和小于第三边的三角形"（如下图）更新到的路径最小值即可。
-![在这里插入图片描述](../pic/dijkstra.png)
+![在这里插入图片描述](../../pic/dijkstra.png)
 
 ```cpp
 #include<bits/stdc++.h>
