@@ -17,11 +17,11 @@
 1. 点 P 本身就在直径上，所以很容易知道 Q 也在直径上且为直径的一个端点。
 2. 点 P 不在树的直径上，但假设存在不是 WQ 的树的直径 AB 与路径 PQ有一个交点 C，如下图。反证法：因为 PQ 为最远，所以 PC + CQ > PC + CA 进而可以得到 CQ > CA。不等式两边同时加上BC，得到 CQ + BC > CA + BC = AB。 这个结论与 AB 为直径的假设不符，故假设不成立。 
 
-![](../../pic/diameterTree.png)
+![](/Alex/OI/pic/diameterTree.png)
 
 3. 点 P 不在树的直径上，并且假设存树的直径不是 WQ 而是 AB，且 AB 与 PQ 没有交点，如下图。因为 PQ 为最远，所以 NP + NQ > NQ + MN + MB，进而得到 NP > MN + MB。易得 NP + MN > MB。不等式两边同时加上 AM 得 NP + MN + AM > MB + AM = AB。与 AB为树的直径的前提相矛盾。所以假设不成立。
 
-![](../../pic/dismeterTree2.png)
+![](/Alex/OI/pic/dismeterTree2.png)
 
 &emsp; 综上所述，引理成立，证毕。
 

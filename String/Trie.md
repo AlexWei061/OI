@@ -6,7 +6,7 @@
 
 &emsp; 假设 $cab, cos, car, cat, cate, rain$ 六个单词构建的 $Trie$ 树如图所示。
 
-![Trie Example](../../cpp/practice/2021SummerVacation/August2021/20210802/TrieEg.png)
+![Trie Example](/Alex/cpp/practice/2021SummerVacation/August2021/20210802/TrieEg.png)
 
 ### $Trie$ 树的基本性质
 1. 根节点不包含字符，除根结点外的每个节点只包含一个字符。

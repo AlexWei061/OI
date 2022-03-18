@@ -5,7 +5,7 @@
 
 &emsp; 树状数组和线段树一样，用来维护序列。和线段树一样，它的时间复杂度也是 $O(\log{n})$，但是树状数组的常数比线段树小，但是他的使用条件会更加苛刻，下面会详细说明。
 
-![树状数组样例](../../../cpp/practice/2021SummerVacation/August2021/20210809/binaryIndexTreeExample.png)
+![树状数组样例](/Alex/cpp/practice/2021SummerVacation/August2021/20210809/binaryIndexTreeExample.png)
 
 &emsp; 如上图，不难发现 $e[i] = \sum_{j=i-2^k+1}^{i}a[j]$，其中 $k$ 是 $i$ 的二进制表示中末尾 $0$ 的个数。同时 $k$ 也是这个节点在数中的高度。所以 $BIT$ 的更新和区间求和就可以利用二进制运算快速实现。
 
