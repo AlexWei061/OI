@@ -279,7 +279,7 @@ int main(){
 
 ## 番外 （100 pts）
 
-&emsp; 考完之后机房大佬 DSW 和 FJN 说可以用莫队卡过去。对于右端点的扩展显然是 $O(1)$ 的，然后左端点的扩展只需要二分找到第一个把这个点弹出去点就可以了。于是这样做的时间复杂度就是 $O(n\sqrt{n}\log n)$。然后加上 ~~亿点点~~ 卡常的技巧就能 $A$ 掉这个题了。
+&emsp; 考完之后机房大佬 DSW 和 FJN 说可以用莫队卡过去。对于右端点的扩展显然是 $O(1)$ 的，然后左端点的扩展只需要二分找到第一个把这个点弹出去点就可以了。于是这样做的时间复杂度就是 $O(n\sqrt{n}\log n)$。然后加上 ~~亿点点~~ 卡常的技巧就能 $A$ 掉这个题了（luogu 的民间数据）。
 
 ```cpp
 // 以下是机房大佬 dsw 的代码
@@ -477,6 +477,8 @@ int main()
 
 &emsp; 传送门 [NOIonline 2022 T2](https://www.luogu.com.cn/problem/P8252)
 
+## 30 pts
+
 &emsp; 这道题 $30$ 分暴力非常好拿，众所周知，直接暴力模拟的时间复杂度是 $O(n^2k)$，但是如果你使用神秘的 $STL$ $bitset$ 的话，复杂度就变成了 $O(\frac{n^3}{\omega})$，其中 $\omega = 64$。就能过掉前三个点就是 $1000$ 的点。
 
 ```cpp
@@ -514,6 +516,76 @@ int main(){
 				}
 			}
 		if(!flag) puts("NO");
+	}
+	return 0;
+}
+```
+
+##  40 pts
+
+&emsp; 我们考虑继续优化。首先对所有人按照所对应的集合的 $size$ 从大到小排序，然后从头到尾扫一遍，然后执行以下操作：
+
+1. 对于每一个人的集合中的题将他们染成同一个颜色。
+2. 如果当前这个人的题目集合跨越了两个颜色，那么我们就找到了要讨论的人。
+
+&emsp; 我们对所有人进行排序是为了保证之后扫到的人不可能包含前面扫到的人的集合。按照这个算法进行在找到能讨论的两个人之前染色的情况应该是只有包含和不交两种情况，像这样：
+
+![在这里插入图片描述](/Alex/OI/pic/NOIonline221.png)
+
+&emsp; 然后我们找到了一个能讨论的集合包含了两种颜色，就像这样：
+
+![在这里插入图片描述](/Alex/OI/pic/NOIonline222.png)
+
+&emsp; 这样做的时间复杂度就是 $O(Tkn + n\log n)$，但是空间复杂度是 $O(n^2)$ 的还是只能过前四个点。看代码：
+
+```cpp
+#include<bits/stdc++.h>
+using namespace std;
+#define in read()
+#define MAXN 5005
+
+inline int read(){
+	int x = 0; char c = getchar();
+	while(c < '0' or c > '9') c = getchar();
+	while('0' <= c and c <= '9'){
+		x = x * 10 + c - '0'; c = getchar();
+	}
+	return x;
+}
+
+int T = 0; int n = 0;
+struct Tpeo{
+	int k; int idx;
+	int s[MAXN];
+	bool operator < (const Tpeo &rhs) const {
+		return k > rhs.k; 
+	}
+}peo[MAXN];
+
+int col = 0;
+int v[MAXN] = { 0 };                          // 染色盘 
+
+int main(){
+	T = in;
+	while(T--){
+		n = in; memset(v, 0, sizeof(v)); col = 0;
+		for(int i = 1; i <= n; i++){
+			peo[i].k = in; peo[i].idx = i;
+			for(int j = 1; j <= peo[i].k; j++) peo[i].s[j] = in;
+		}
+		sort(peo + 1, peo + n + 1); bool same = true;
+		for(int i = 1; i <= n; i++){
+			col++; int c = v[peo[i].s[1]];
+//			printf("i = %d k = %d\n  ", i, peo[i].k);
+//			for(int j = 1; j <= peo[i].k; j++) cout << peo[i].s[j] << ' ';
+//			puts("");
+//			printf("c = %d\n", c);
+			if(!peo[i].k) continue;
+			for(int j = 1; j <= peo[i].k; j++) if(v[peo[i].s[j]] != c) { if(!c)c = v[peo[i].s[j]]; same = false; break; }
+			for(int j = 1; j <= peo[i].k; j++) v[peo[i].s[j]] = col;
+			if(!same) { cout << "YES" << '\n' << peo[i].idx << ' ' << peo[c].idx << '\n'; break; }
+		}
+		if(same) cout << "NO" << '\n';
 	}
 	return 0;
 }
