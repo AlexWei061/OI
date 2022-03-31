@@ -521,9 +521,77 @@ int main(){
 }
 ```
 
-##  40 pts
+##  100 pts
 
-&emsp; 我们考虑继续优化。首先对所有人按照所对应的集合的 $size$ 从大到小排序，然后从头到尾扫一遍，然后执行以下操作：
+### 奇怪但是很妙的构造
+
+&emsp; 然后我们考虑继续优化。我们现在维护一个 $last[i]$ 数组表示当前枚举到的人中会做 $i$ 题的最后一个人的编号（其实就是染色（后面会说） qwq）。然后我们通过一些分析就能得出一些神奇的性质。
+
+&emsp; 首先，如果我们在枚举第 $now$ 个人会做的题目 $p$ 时，发现 $last_p = 0$。那么说明 $now$ 就是枚举到的人中第一个会做 $p$ 这道题的人。如果是这样就比较好处理，我们只需要找到一个在前面找一个与 $i$ 有交的人就好了（因为有题目 $p$ 的存在所以前面的人不可能包含 $now$）。
+
+&emsp; 那么第二种情况 $last_p$ 有值，现在的问题就是要求 $last_p$ 和 $now$ 不能是包含关系。我们为了方便，记 $x = last_p$。然后我们继续枚举其他题，发现有另一道题的 $last_{p'} \neq x$。那我们把现在的 $last_{p'}$ 也记录下来记为 $y$。现在我们就有了两个不同的人，他们**都满足与 $now$ 有题目交集。** 
+
+&emsp; 现在我们找到 $x$ 和 $y$ 中 $k$ 较小的那个（假设 $k[x] > k[y]$）。因为排序，所以 $y$ 的枚举的顺序肯定在 $x$ 之后，又因为 $last_{p} = x \neq y$，所以 $y$ 肯定不会做题 $p$，又因为 $now$ 会做 $p$，**所以 $now$ 和 $y$ 肯定不是包含关系**，那么久满足了这道题的要求。那我们就输出 $now$ 和 $y$ 就搞定了。
+
+&emsp; 看代码：
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+#define in read()
+#define MAXN 500500
+
+inline int read(){
+	int x = 0; char c = getchar();
+	while(c < '0' or c > '9') c = getchar();
+	while('0' <= c and c <= '9'){
+		x = x * 10 + c - '0'; c = getchar();
+	}
+	return x;
+}
+
+int k[MAXN] = { 0 };
+int id[MAXN] = { 0 };
+int lst[MAXN] = { 0 };
+vector <int> g[MAXN];
+int T = 0; int n = 0;
+bool comp(int x, int y) { return k[x] > k[y]; }
+
+int main(){
+	T = in;
+	while(T--){
+		n = in; memset(lst, 0, sizeof(lst));
+		for(int i = 1; i <= n; i++) g[i].clear();
+		for(int i = 1; i <= n; i++){
+			k[i] = in; id[i] = i;
+			for(int j = 1; j <= k[i]; j++) g[i].push_back(in);
+		}
+		sort(id + 1, id + n + 1, comp);
+		int now = 0; int x = 0; int y = 0;
+		for(int i = 1; i <= n; i++){
+			now = id[i]; x = y = 0;
+			for(int j : g[now]){
+				int p = lst[j]; lst[j] = now;               // 维护 last[i] 
+				if(!p) p = now;                             // lst[p] 为空 
+				if(!x) x = p;                               // 之前的题中没有给 x 赋值 
+				else if(x ^ p) y = p;                       // 找到另一道题 y 
+				if(x and y) goto yes;
+			}
+		}
+		puts("NO"); continue;
+		yes :
+		if(x ^ now and y ^ now)
+			if(k[x] > k[y]) x = now;
+			else y = now;
+		cout << "YES" << '\n' << x << ' ' << y << '\n';
+	}
+	return 0;
+}
+```
+
+### 染色
+
+&emsp; 前面的构造没看懂没关系，我们来看看更容易理解的一种算法（其实和构造是差不多等效的），看完染色再回去看构造应该就能有更深的理解 qwq。首先对所有人按照所对应的集合的 $size$ 从大到小排序，然后从头到尾扫一遍，然后执行以下操作：
 
 1. 对于每一个人的集合中的题将他们染成同一个颜色。
 2. 如果当前这个人的题目集合跨越了两个颜色，那么我们就找到了要讨论的人。
@@ -536,13 +604,13 @@ int main(){
 
 ![在这里插入图片描述](/Alex/OI/pic/NOIonline222.png)
 
-&emsp; 这样做的时间复杂度就是 $O(Tkn + n\log n)$，但是空间复杂度是 $O(n^2)$ 的还是只能过前四个点。看代码：
+&emsp; 看代码（$luogu$ 上官方数据只有 $50$ 分，它的错误是 Wrong Answer.wrong answer Set 49999 contains set 34250，但是民间数据是全 $A$ 了的。如果有大佬知道哪里有问题希望指出 ~~实在是不知道哪儿错了 qwq~~）：
 
 ```cpp
 #include<bits/stdc++.h>
 using namespace std;
 #define in read()
-#define MAXN 5005
+#define MAXN 500500
 
 inline int read(){
 	int x = 0; char c = getchar();
@@ -554,9 +622,9 @@ inline int read(){
 }
 
 int T = 0; int n = 0;
+vector<int> g[MAXN];
 struct Tpeo{
 	int k; int idx;
-	int s[MAXN];
 	bool operator < (const Tpeo &rhs) const {
 		return k > rhs.k; 
 	}
@@ -570,26 +638,25 @@ int main(){
 	while(T--){
 		n = in; memset(v, 0, sizeof(v)); col = 0;
 		for(int i = 1; i <= n; i++){
-			peo[i].k = in; peo[i].idx = i;
-			for(int j = 1; j <= peo[i].k; j++) peo[i].s[j] = in;
+			peo[i].k = in; peo[i].idx = i; g[i].clear();
+			for(int j = 1; j <= peo[i].k; j++) g[i].push_back(in);
 		}
 		sort(peo + 1, peo + n + 1); bool same = true;
 		for(int i = 1; i <= n; i++){
-			col++; int c = v[peo[i].s[1]];
-//			printf("i = %d k = %d\n  ", i, peo[i].k);
-//			for(int j = 1; j <= peo[i].k; j++) cout << peo[i].s[j] << ' ';
-//			puts("");
-//			printf("c = %d\n", c);
+			int now = peo[i].idx; col++; int c = v[g[now].front()];
 			if(!peo[i].k) continue;
-			for(int j = 1; j <= peo[i].k; j++) if(v[peo[i].s[j]] != c) { if(!c)c = v[peo[i].s[j]]; same = false; break; }
-			for(int j = 1; j <= peo[i].k; j++) v[peo[i].s[j]] = col;
-			if(!same) { cout << "YES" << '\n' << peo[i].idx << ' ' << peo[c].idx << '\n'; break; }
+			for(int j : g[now]){
+				if(v[j] != c) { if(!c) c = v[j]; same = false; break; }
+				v[j] = col;
+			}
+			if(!same) { cout << "YES" << '\n' << now << ' ' << peo[c].idx << '\n'; break; }
 		}
 		if(same) cout << "NO" << '\n';
 	}
 	return 0;
 }
 ```
+
 
 # T3 如何正确排序
 &emsp; 直接暴力模拟有 $10$ 分。
