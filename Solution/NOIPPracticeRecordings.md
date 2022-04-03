@@ -516,6 +516,37 @@ $$
 
 &emsp; 然后 $\mu(d)$ 可以用埃氏筛预处理然后 $O(1)$ 查询。后面的 $\left\lfloor \frac nd \right\rfloor^2$ 显然也是可以 $O(1)$ 查询的，那么总的复杂度就是 $O(n\log n + n)$
 
+### [P2522 [HAOI2011]Problem b](https://www.luogu.com.cn/problem/P2522)
+
+&emsp; (2021.11.7)
+
+&emsp; 对于给出的 n 个询问，每次求出有多少个数对 $(x, y)$ 满足 $a \leq x \leq b, c \leq y \leq d$ 且 $gcd(x, y) = k$。
+
+&emsp; 所以这个题的答案就是：
+$$ ans = \sum_{i = a}^b \sum_{j = c}^d [gcd(i, j) = k] $$
+
+&emsp; 这个式子就和上面那个题的试着长得很像了，但是这个上下界看着还是有点不舒服，因为我们想把它转化成下界为 1 的求和，于是我们利用容斥原理，转化一下问题：
+$$
+\begin{aligned}
+ans = & \sum_{i = a}^b \sum_{j = c}^d [gcd(i, j) = k]  \\
+= & \sum_{i = 1}^b \sum_{j = 1}^d [gcd(i, j) = k] - \sum_{i = 1}^{a-1} \sum_{j = 1}^d [gcd(i, j) = k] - \sum_{i = 1}^b \sum_{j = 1}^{c-1} [gcd(i, j) = k] + \sum_{i = 1}^{a-1} \sum_{j = 1}^{c-1} [gcd(i, j) = k]
+\end{aligned} 
+$$
+
+&emsp; 于是问题就被转化成求 4 个和上道题差不多的式子。由上一道题我们知道：
+$$
+\begin{aligned}
+& \sum_{i = 1}^n \sum_{j = 1}^m [gcd(i, j) = k]\\
+= & \sum_{i = 1}^n \sum_{j = 1}^m \varepsilon\left( \frac{gcd(i, j)}{k} \right)= \sum_{i = 1}^n \sum_{j = 1}^m \sum_{p | gcd(i, j) / k} \mu(p) = \sum_{p = 1}^{min(n, m)}\sum_{i = 1}^n \sum_{j = 1}^m \left[ p \Big| \frac{gcd(i, j)}{k} \right]\mu(p) \\
+= &\sum_{p = 1}^{min(n, m)}\mu(p) \sum_{i = 1}^n \sum_{j = 1}^m \left[ p \Big| \frac{gcd(i, j)}{k} \right] = \sum_{p = 1}^{min(n, m)}\mu(p) \sum_{i = 1}^n \sum_{j = 1}^m \left[ p \Big| \frac{i}{k} \wedge p \Big| \frac{j}{k} \right] = \sum_{p = 1}^{min(n, m)}\mu(p) \sum_{i = 1}^n \sum_{j = 1}^m \left[ kp \mid i \wedge kp \mid j \right] \\
+= & \sum_{p = 1}^{min(n, m)}\mu(p) \left\lfloor \frac{n}{kp} \right\rfloor \left\lfloor \frac{m}{kp} \right\rfloor
+\end{aligned}
+$$
+
+&emsp; 然后我们只需要写一个函数来处理这个，然后每次询问调用 4 次就好了。计算这个式子的时间复杂度是 $O(min(n, m) \log min(n, m) + min(n, m))$，所以如果我还要处理 $5 \times 10^4$ 组这样的数据，就会超时，直接计算能拿 30 分。
+
+&emsp; 下面我们考虑怎么样优化处理这个式子的时间。首先看看这个式子的样子，他长得是不是就很像整除分块，那就直接整除分块计算这个式子，复杂度就被降到了 $O(\sqrt{min(n, m)})$，·这样一来就能过了。
+
 ### [luogu2480 古代猪文](https://www.luogu.com.cn/problem/P2480)
 
 &emsp; (2022.4.3)
