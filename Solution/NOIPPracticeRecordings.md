@@ -322,6 +322,200 @@ $$
 
 $$ p 是质数 \rightarrow C_n^m \equiv C_{n\mod p}^{m\mod p} \times C_{\frac np}^{\frac mp} \pmod p $$
 
+#### 埃氏筛
+&emsp; 埃氏筛的思想很简单，就是从前往后，遇到一个质数就把所有后面小于 n 的这个质数的倍数全都标记为合数。后面遇到他们就直接跳过。
+
+##### 筛质数
+
+&emsp; 按照上面的思想直接模拟就好了，时间复杂度 $O(n \log \log n)$：
+```cpp
+#include<bits/stdc++.h>
+using namespace std;
+#define MAXN 100100
+
+int v[MAXN] = { 0 };              // 合数标记 
+void primes(int n){
+	memset(v, 0, sizeof(v));
+	for(int i = 2; i <= n; i++){
+		if(v[i]) continue;
+		cout << i << endl;
+		for(int j = 1; j <= n / i; j++) v[i * j] = 1;
+	}
+}
+
+int main(){
+	primes(100);
+	return 0;
+}
+```
+
+##### 筛欧拉函数
+
+&emsp; 利用欧拉函数的计算式和埃氏筛，能在 $O(n \log n)$ 的时间内筛出欧拉函数的值。就是首先初始化所有的 phi[i] = 1，然后再枚举从 2 到 n 的每个数，用埃氏筛找出质数，然后把后面质数的倍数根据计算式计算就好了：
+
+$$ \varphi(n) = n \prod_{p | n} \frac {p-1}p $$
+
+```cpp
+#include<bits/stdc++.h>
+using namespace std;
+#define MAXN 100100
+
+int phi[MAXN] = { 0 };
+void euler(int n){
+	for(int i = 1; i <= n; i++) phi[i] = i;
+	for(int i = 2; i <= n; i++){
+		if(phi[i] == i)
+			for(int j = i; j <= n; j += i)
+				phi[j] = phi[j] / i * (i - 1);
+	}
+}
+
+int main(){
+	euler(20);
+	for(int i = 1; i <= 20; i++){
+		cout << "phi[" << i << "] = " << phi[i] << endl;
+	}
+	return 0;
+}
+```
+
+##### 筛莫比乌斯函数
+
+&emsp; 首先把所有的 mu 初始化为 1，接下来对于每一个质数 p 把 mu[p] 变成 -1。并扫描 p 的倍数们看他们能否被 $p^2$ 整除，如果可以 mu[x] = 0，如果不行 mu[x] = -mu[x]。
+
+```cpp
+#include<bits/stdc++.h>
+using namespace std;
+#define MAXN 100100
+
+int v[MAXN] = { 0 };
+int mu[MAXN] = { 0 };
+void mobius(int n){
+	memset(v, 0, sizeof(v));
+	for(int i = 2; i <= n; i++) mu[i] = 1;
+	for(int i = 2; i <= n; i++){
+		if(v[i]) continue;
+		mu[i] = -1;
+		for(int j = 2 * i; j <= n; j += i){
+			v[j] = 1;
+			if((j / i) % i == 0) mu[j] = 0;
+			else mu[j] *= -1;
+		}
+	}
+}
+
+int main(){
+	mobius(20);
+	for(int i = 1; i <= 20; i++){
+		cout << "mu[" << i << "] = " << mu[i] << endl;
+	}
+	return 0;
+}
+```
+
+#### 线性筛
+
+&emsp; 顾名思义，这玩意儿能在线性的时间内筛出质数。具体的做法是优化一下埃氏筛，在埃氏筛里面，一个合数可能被很多个质数标记过，比如 12 就被 2 和 3 同时标记过。这样就会降低我们的效率。线性筛的想法就是让所有的合数只有一种被筛出来的方式。也就是被它的最小质因子筛出来。具体做法如下：
+
+1. 枚举 $2 \sim n$ 的所有数，考虑用一下方式维护一个数组 v（表示这个数的最小质因子）。
+2. 如果 v[i] = i，那么这个是是质数，把它存下来。
+3. 扫描不大于 v[i] 的所有质数 p，令 v[ip] = p。
+
+
+##### 筛质数
+
+```cpp
+#include<bits/stdc++.h>
+using namespace std;
+#define MAXN 100100
+
+int v[MAXN] = { 0 };
+int prime[MAXN] = { 0 };
+int primes(int n){
+	memset(v, 0, sizeof(v));
+	int cnt = 0;                                                 // 质数的个数
+	for(int i = 2; i <= n; i++){
+		if(!v[i]){ 
+			v[i] = i; prime[++cnt] = i; 
+		}
+		for(int j = 1; j <= cnt; j++){                           // 枚举所有质数 
+			if(prime[j] > v[i] or prime[j] > n / i) break;       // 质数比它大或者超过范围 
+			v[i * prime[j]] = prime[j];                          // 更新最小质因子 
+		}
+	}
+	return cnt;
+}
+
+int main(){
+	int num = primes(100);
+	for(int i = 1; i <= num; i++){
+		cout << prime[i] << endl;
+	}
+	return 0;
+}
+```
+
+##### 筛欧拉函数
+
+&emsp; 这就要用到几个欧拉函数的性质了：
+
+1. 如果 $p \mid n$ 且 $p^2 \mid n$ 则有 $\varphi(n) = {\varphi(\frac np)} \times p$
+2. 如果 $p \mid n$ 且 $p^2 \nmid n$ 则有 $\varphi(n) = \varphi(\frac np) \times (p-1)$
+
+&emsp; 我们发现这两个判断和线性筛的两个判断很类似，所以我们可以利用线性筛，从 $\varphi(\frac np)$ 递推到 $\varphi(n)$
+```cpp
+#include<bits/stdc++.h>
+using namespace std;
+#define MAXN 100100
+
+int v[MAXN] = { 0 };
+int phi[MAXN] = { 0 };
+void euler(int n){
+	memset(v, 0, sizeof(v));
+	int cnt = 0;
+	for(int i = 2; i <= n; i++){
+		if(!v[i]){
+			v[i] = i; prime[++cnt] = i;
+			phi[i] = i - 1;
+		}
+		for(int j = 1; j <= cnt; j++){
+			if(prime[j] > v[i] or prime[j] > n / i) break;
+			v[i *prime[j]] = prime[j];
+			if(i % prime[j]) phi[i * prime[j]] = phi[i] * (prime[j] - 1);
+			else phi[i * prime[j]] = phi[i] * prime[j];
+		}
+	}
+}
+
+int main(){
+	euler(20);
+	for(int i = 1; i <= 20; i++){
+		cout << "phi[" << i << "] = " << phi[i] << endl;
+	}
+	return 0;
+}
+```
+
+### [luogu2185 SDOI2008 仪仗队](https://www.luogu.com.cn/problem/P2158)
+
+&emsp; (2021.11.7)
+
+有一个点阵（方阵），你站在左下角，问你能总共看到几个点。然后我们可以发现，如果我们将左下角的点放在坐标轴 原点，能被看见的点的横纵坐标一定是互质的（除了两个和它相邻的点）。所以我们要求解的问题的答案就是：
+$$ ans = 2 + \sum_{i=1}^n \sum_{j=1}^n [gcd(i, j) = 1] $$
+
+&emsp; 然后可以对这个式子进行化简：
+$$
+\begin{aligned}
+ans-2 = & \sum_{i=1}^{n-1} \sum_{j=1}^{n-1} [gcd(i, j) = 1] \\
+= & \sum_{i=1}^{n-1} \sum_{j=1}^{n-1} \varepsilon(gcd(i, j)) = \sum_{i=1}^{n-1} \sum_{j=1}^{n-1} \sum_{d \mid gcd(i, j)}\mu(d) \\ 
+= & \sum_{d = 1}^{n-1} \sum_{i=1}^{n-1} \sum_{j=1}^{n-1} [d \mid gcd(i, j)]\mu(d) = \sum_{d = 1}^{n-1} \sum_{i=1}^{n-1} \sum_{j=1}^{n-1} [d \mid i \wedge d \mid j]\mu(d) \\
+= & \sum_{d=1}^{n-1} \mu(d) \sum_{i=1}^{n-1} \sum_{j=1}^{n-1} [d \mid i \wedge d	 \mid j] \\
+= & \sum_{d=1}^{n-1} \mu(d)  \left\lfloor \frac {n-1}d \right\rfloor^2
+\end{aligned}
+$$
+
+&emsp; 然后 $\mu(d)$ 可以用埃氏筛预处理然后 $O(1)$ 查询。后面的 $\left\lfloor \frac nd \right\rfloor^2$ 显然也是可以 $O(1)$ 查询的，那么总的复杂度就是 $O(n\log n + n)$
+
 ### [luogu2480 古代猪文](https://www.luogu.com.cn/problem/P2480)
 
 &emsp; (2022.4.3)
