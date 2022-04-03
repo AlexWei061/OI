@@ -152,6 +152,60 @@ $$
 
 # Math
 
+## expectation and posibility
+
+### 一些前置芝士
+
+#### 概率
+$$
+\begin{aligned}
+& P(A\cup B) = P(A) + P(B) - P(A \cap B) \\
+& P(B-A) = P(B) - P(A) \qquad (P(A) \leq P(B)) \\
+& P(B-A) = P(B) - P(A \cap B) \qquad (\forall A, B) \\
+& P(A\mid B) = \frac{P(A \cap B)}{P(B)} \\
+& P(AB) = P(A) \times P(B\mid A) = P(B) \times P(A\mid B) \quad (A,B 有关联) \\ 
+\end{aligned}
+$$
+
+##### 全概率公式
+$$ P(A) = \sum_{i=1}^n P(A\mid H_i) \times P(H_i) $$
+
+##### 贝叶斯定理
+$$ P(A\mid B) = \frac{P(A)P(B\mid A)}{P(B)} $$
+
+#### 期望
+$$
+\begin{aligned}
+& E(x) = \sum_i p_ix_i \\
+& E(C) = C \quad E(Cx) = CE(x) \quad E(x+y) = E(x) + E(y) \\ 
+& E(xy) = E(x)E(y) \qquad (x,y相互独立)
+\end{aligned}
+$$
+
+##### 全期望公式
+$$ E(Y) = E(E(Y \mid X)) = \sum_i P(x=x_i)E(Y \mid X = x_i) $$
+
+### [luogu1291 SHOI2002百事世界杯之旅](https://www.luogu.com.cn/problem/P1291)
+
+&emsp; “……在 $2002$ 年 $6$ 月之前购买的百事任何饮料的瓶盖上都会有一个百事球星的名字。只要凑齐所有百事球星的名字，就可参加百事世界杯之旅的抽奖活动，获得球星背包，随声听，更可赴日韩观看世界杯。还不赶快行动！”
+
+&emsp; 你关上电视，心想：假设有 $n$ 个不同的球星名字，每个名字出现的概率相同，平均需要买几瓶饮料才能凑齐所有的名字呢？
+
+&emsp; 设 $E_{i, j}$ 表示总共有 i 个，还有 j 个没有抽到的期望。,我们考虑下一次抽取：有 $\frac k n$ 的概率抽到我们还没有的，有 $\frac{n-k}n$ 的概率抽到我们已经抽到的，于是我们可以得到以下的递推式：
+$$ E_{n, k} = \frac k n E_{n,k-1} + \frac{n-k}n E_{n, k} + 1 $$
+
+&emsp; 然后稍微移项化简一下，就会变成这样：
+$$
+\begin{aligned}
+& E_{n, k} = \frac k n E_{n,k-1} + \frac{n-k}n E_{n, k} + 1 \\
+& E_{n, k} - \frac{n-k}n E_{n, k} = \frac k n E_{n,k} = \frac k n E_{n,k-1} + 1 \\ 
+& E_{n, k} = E_{n, k-1} + \frac n k
+\end{aligned}
+$$
+
+&emsp; 又因为我们知道 $E_{1,1} = 1$,，所以我们得到通项公式：
+$$ E(x) = n\sum_{i=1}^n\frac 1 i $$
+
 ## number theory
 
 ### 一些前置芝士
