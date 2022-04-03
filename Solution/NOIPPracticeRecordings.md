@@ -152,7 +152,9 @@ $$
 
 # Math
 
-## 一些前置芝士
+## number theory
+
+### 一些前置芝士
 
 &emsp; 欧拉定理：
 $$ \forall gcd(a, n) = 1 \rightarrow a^{\varphi(n)} \equiv 1 \pmod n $$
@@ -193,7 +195,7 @@ $$
 
 $$ p 是质数 \rightarrow C_n^m \equiv C_{n\mod p}^{m\mod p} \times C_{\frac np}^{\frac mp} \pmod p $$
 
-## [luogu2480 古代猪文](https://www.luogu.com.cn/problem/P2480)
+### [luogu2480 古代猪文](https://www.luogu.com.cn/problem/P2480)
 
 &emsp; (2022.4.3)
 
