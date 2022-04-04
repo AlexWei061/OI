@@ -638,7 +638,7 @@ $$
 
 ### [luogu2480 古代猪文](https://www.luogu.com.cn/problem/P2480)
 
-&emsp; (2022.4.3)
+&emsp; (2022.4.2)
 
 &emsp; 给你 $q, n \in [1, 10^9]$，算 $q^{\sum\limits_{d | n}C_n^d} \mod p$, 其中 $p = 999911659$。
 
