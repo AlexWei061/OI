@@ -805,6 +805,14 @@ $$ f(state) = \sum_{i=1}^{9} (state_{xi} ==  goal_{xi} \; and \; state_{yi} == g
 
 # Other
 
+## [luogu1102 数对](https://www.luogu.com.cn/problem/P1102)
+
+&emsp; (2022.4 8)
+
+&emsp; 给你一个长度为 $n \in [1, 2e5]$ 的数列（数列中的数 $a_i \in [1, 2^{30}]$）和一个整数 $C$，然后让你找出这个数列中所有位置不同的两个数 $A, B$。并统计满足 $A - B = C$ 的数对的个数。
+
+&emsp; 挺水的一道题。我们把条件转化一下，把 $A - B = C$ 转化成 $A - C = B$。然后我们只用建立一个 $map$，$m[a[i]]$ 表示 $a[i]$ 在 $\{a\}$ 中出现的次数。然后 $ans = \sum\limits_{i = 1}^nm[a[i] - C]$。就搞定了。
+
 ## 单调队列
 
 ### [WOJ4744 最佳序列](http://192.168.110.251/problempage.php?problem_id=4744)
