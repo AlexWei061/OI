@@ -813,6 +813,27 @@ $$ f(state) = \sum_{i=1}^{9} (state_{xi} ==  goal_{xi} \; and \; state_{yi} == g
 
 &emsp; 挺水的一道题。我们把条件转化一下，把 $A - B = C$ 转化成 $A - C = B$。然后我们只用建立一个 $map$，$m[a[i]]$ 表示 $a[i]$ 在 $\{a\}$ 中出现的次数。然后 $ans = \sum\limits_{i = 1}^nm[a[i] - C]$。就搞定了。
 
+## [luogu2671 求和](https://www.luogu.com.cn/problem/P2671)
+
+&emsp; (2022.4.9)
+
+&emsp; 现在有一个数组，每个数三个值 $(x, y, c)$。分别表示下标，值和颜色。如果我们找到一个三元组 $(i, j, k)$ 满足 $j$ 是 $i, k$ 的等差中项且下标分别为 $i$ 和 $k$ 的所对应的颜色相同，那么这个三元组就对答案有 $(x_i + x_k) \times (y_i + y_k)$ 的贡献。求总答案。
+
+&emsp; 首先我们发现 $j$ 其实没啥用，这里只是规定了 $i$ 和 $k$ 必须奇偶性相同。所以我们考虑单独把能对答案产生贡献的块放到一起。也就是按颜色为第一关键字，$x$ 的奇偶性按第二关键字排序。然后分别处理每一块对答案的贡献，然后再加起来就可以了。
+
+&emsp; 这里以处理第一块对答案的贡献为例（假设第一块的长度为 $k$）。那么这块的贡献就是：
+
+$$
+\begin{aligned}
+& \sum_{i = 1}^k\sum_{j = i + 1}^k(x_i + x_j)(y_i +y_j) \\
+= & \sum_{i=1}^k\sum_{j=i +1}^k(x_iy_i + x_jy_j + x_iy_j + x_jy_i) \\
+= & \sum_{i = 1}^k \left( \sum_{j = i +1}^k x_iy_i + \sum_{j = i +1}^k x_jy_j + \sum_{j = i +1}^kx_iy_j + \sum_{j = i +1}^kx_jy_i \right) \\
+= &\sum_{i = 1}^k \left( (k - i)x_iy_i + \sum_{j = i +1}^kx_jy_j + x_i\sum_{j = i +1}^ky_j + y_i\sum_{j = i +1}^kx_j \right) \\
+\end{aligned}
+$$
+
+&emsp; 然后我们发现只要我们预处理出 $x_i$、$y_i$ 和 $x_iy_i$ 的前缀和，我们就能 $O(1)$ 处理我们用很大的括号括起来的那一坨式子。这样整个的复杂度就是 $O(k)$ 的。
+
 ## 单调队列
 
 ### [WOJ4744 最佳序列](http://192.168.110.251/problempage.php?problem_id=4744)
