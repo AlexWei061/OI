@@ -743,6 +743,115 @@ $$
 
 &emsp; 解这个方程很显然就是中国剩余定理。然后我们就用快速幂求 $q^x$ 就是答案了。
 
+## linear algebra
+
+### [Power of Matrix](https://www.luogu.com.cn/problem/UVA11149)
+&emsp; (2022.4.30)
+
+&emsp; 给一个 $n \times n$ 的矩阵 $A$，给定一个整数 $k$ 求：
+
+$$ ans = \sum_{i = 1}^k A_i $$
+
+&emsp; 我们将这个式子看成递推也就是：
+
+$$ F_k = \sum_{i = 1}^k A^i $$
+
+&emsp; 其中 $F_0 = O = \begin{bmatrix}0 & 0 & \cdots&  0 \\ 0 & 0 & \cdots & 0 \\ \vdots & \vdots & \ddots & \vdots \\ 0 & 0 & \cdots & 0 \end{bmatrix}$，$F_1 = A$，然后我们可以得到矩阵版的递推关系：
+
+$$
+\begin{bmatrix}
+F_k & E
+\end{bmatrix} = 
+\begin{bmatrix}
+F_{k - 1} & E
+\end{bmatrix} \times
+S = 
+\begin{bmatrix}
+F_0 & E
+\end{bmatrix} \times S^{k}
+$$
+
+&emsp; 上面的式子中的 $E$ 表示单位矩阵，也就是：
+
+$$
+E = \begin{bmatrix}1 & 0 & \cdots&  0 \\ 0 & 1 & \cdots & 0 \\ \vdots & \vdots & \ddots & \vdots \\ 0 & 0 & \cdots & 1 \end{bmatrix}
+$$
+
+&emsp; 使用单位矩阵是为了更方便的写出 $S$ 来，我们设：
+
+$$ S = 
+\begin{bmatrix}
+a & b \\ c & d
+\end{bmatrix}
+$$
+
+&emsp; 其中 $a, b, c, d$ 都是 $n \times n$ 的矩阵，$S$ 是 $2n \times 2n$ 的矩阵，这样才能满足上面的递推关系。我们根据上面的关系又能得出：
+
+$$
+\begin{aligned}
+& \begin{bmatrix} F_k & E \end{bmatrix} = \begin{bmatrix} F_{k - 1} & E \end{bmatrix} \times \begin{bmatrix} a & b \\ c & d \end{bmatrix} \\
+\rightarrow & \quad F_k = F_{k - 1} \times a + c \; , \;E \; = F_{k - 1} \times b + d
+\end{aligned}
+$$
+
+&emsp; 又因为我们有：
+
+$$ F_k = F_{k - 1} + A^k $$
+
+&emsp; 就能得到：
+
+$$ F_{k - 1} + A^k = F_{k - 1} \times a + c \; , \; E = F_{k - 1} \times b + d $$
+
+&emsp; 带入 $k = 1$，得到：
+
+$$ F_0 + A = F_0 \times a +c \; , \; E = F_0 \times b + d $$
+
+&emsp; 带入 $k = 2$ 得到：
+
+$$ F_1 + A^2 = F_1 \times a + c \; , \; E = F_1 \times b + d $$
+
+&emsp; 然后就能得到：
+
+$$ a = A \; , \; b = O \; , \; c = A \; , \; d = E $$
+
+&emsp; 也就是：
+
+$$ S = \begin{bmatrix} A & O \\ A & E \end{bmatrix}, S^k = \begin{bmatrix} A^k & O \\ \sum\limits_{i = 1}^k A^i & E \end{bmatrix} $$
+
+&emsp; 也就是说 $S^k$ 的左下角就是答案。
+
+### [球形空间产生器](https://www.luogu.com.cn/problem/P4035)
+
+&emsp; (2022.4.30)
+
+&emsp; 给一个 $n \in [1, 10]$ 维空间中的 $n + 1$ 个点的坐标，求出过这 $n +1$ 个点的 $n$ 维空间上的 "球" 的球心的坐标。
+
+&emsp; 我们发现对于球心的坐标： $(x_1, x_2, x_3, \cdots , x_n)$，我们都有：
+
+$$ \sum_{j = 0}^n (a_{i, j} - x_i)^2 = Const $$
+
+&emsp; 其中 $a_{i, j}$ 第 $i$ 个点的第 $j$ 维坐标。我们发现这个方程是一个 $n$ 元 $2$ 次方程组，总共有 $n + 1$ 个方程，不是一个线性方程，但是我们可以通过一些变换将它变成线性方程然后通过高斯消元来求解。具体方法我们将相邻的两个方程作差：
+
+$$
+\begin{aligned}
+&\sum_{j = 1}^n (a_{i, j}^2 - a_{i +1, j}^2 - 2x_i(a_{i, j} - a_{i +1, j})) = 0, \quad (i \in [1, n], i \in Z) \\
+\rightarrow &\sum_{j = 1}^n2(a_{i, j} - a_{i +1, j})x_j = \sum_{j = 1}^n(a_{i, j}^2 - a_{i +1, j}^2), \quad (i \in [1, n], i \in Z)
+\end{aligned}
+$$
+
+&emsp; 现在我们发现这就是一个现线性的方程组了，也就是我们高斯消元这个增广矩阵：
+
+$$
+\begin{bmatrix}
+2(a_{1, 1} - a_{2, 1}) & 2(a_{1, 2} - a_{2, 2}) & \cdots & 2(a_{1, n} - a_{2, n}) & \sum\limits_{j = 1}^n (a_{1, j}^2 - a_{2, j}^2) \\
+2(a_{2, 1} - a_{3, 1}) & 2(a_{2, 2} - a_{3, 2}) & \cdots & 2(a_{2, n} - a_{3, n}) & \sum\limits_{j = 1}^n (a_{2, j}^2 - a_{3, j}^2) \\
+\vdots & \vdots & \ddots & \vdots & \vdots \\
+2(a_{n, 1} - a_{n +1, 1}) & 2(a_{n, 2} - a_{n +1, 2}) & \cdots & 2(a_{n, n} - a_{n +1, n}) & \sum\limits_{j = 1}^n (a_{n, j}^2 - a_{n +1, j}^2)
+\end{bmatrix}
+$$
+
+&emsp; 就能得到答案了。
+
 ------
 
 # Construct
